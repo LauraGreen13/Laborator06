@@ -9,15 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import ro.pub.cs.systems.eim.lab06.clientservercommunication.R;
+import ro.pub.cs.systems.eim.lab06.clientservercommunication.general.Constants;
+import ro.pub.cs.systems.eim.lab06.clientservercommunication.general.Utilities;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import ro.pub.cs.systems.eim.lab06.clientservercommunication.R;
-import ro.pub.cs.systems.eim.lab06.clientservercommunication.general.Constants;
-import ro.pub.cs.systems.eim.lab06.clientservercommunication.general.Utilities;
 
 public class ServerFragment extends Fragment {
 
@@ -66,6 +65,10 @@ public class ServerFragment extends Fragment {
                 // TODO: exercise 6a
                 // - get the PrintWriter object in order to write on the socket (use Utilities.getWriter())
                 // - print a line containing the text in serverTextEditText edit text
+
+                PrintWriter printWriter = Utilities.getWriter(socket);
+                printWriter.append(serverTextEditText.getText());
+
                 socket.close();
                 Log.v(Constants.TAG, "Connection closed");
             } catch (IOException ioException) {

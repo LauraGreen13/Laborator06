@@ -1,20 +1,19 @@
 package ro.pub.cs.systems.eim.lab06.singlethreadedserver.views;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
+import ro.pub.cs.systems.eim.lab06.singlethreadedserver.R;
+import ro.pub.cs.systems.eim.lab06.singlethreadedserver.general.Constants;
+import ro.pub.cs.systems.eim.lab06.singlethreadedserver.general.Utilities;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import ro.pub.cs.systems.eim.lab06.singlethreadedserver.R;
-import ro.pub.cs.systems.eim.lab06.singlethreadedserver.general.Constants;
-import ro.pub.cs.systems.eim.lab06.singlethreadedserver.general.Utilities;
 
 public class SingleThreadedServerActivity extends AppCompatActivity {
 
@@ -82,6 +81,14 @@ public class SingleThreadedServerActivity extends AppCompatActivity {
                 while (isRunning) {
                     Socket socket = serverSocket.accept();
                     Log.v(Constants.TAG, "Connection opened with " + socket.getInetAddress() + ":" + socket.getLocalPort());
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException interruptedException) {
+                        Log.e(Constants.TAG, interruptedException.getMessage());
+                        if (Constants.DEBUG) {
+                            interruptedException.printStackTrace();
+                        }
+                    }
                     PrintWriter printWriter = Utilities.getWriter(socket);
                     printWriter.println(serverTextEditText.getText().toString());
                     socket.close();
@@ -104,5 +111,14 @@ public class SingleThreadedServerActivity extends AppCompatActivity {
         serverTextEditText = (EditText)findViewById(R.id.server_text_edit_text);
         serverTextEditText.addTextChangedListener(serverTextContentWatcher);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (serverThread != null) {
+            serverThread.stopServer();
+        }
+    }
+
 
 }

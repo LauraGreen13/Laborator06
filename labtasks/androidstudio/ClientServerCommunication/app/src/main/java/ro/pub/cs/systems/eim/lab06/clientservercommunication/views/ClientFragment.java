@@ -1,8 +1,8 @@
 package ro.pub.cs.systems.eim.lab06.clientservercommunication.views;
 
+import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,14 +10,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.net.Socket;
-
 import ro.pub.cs.systems.eim.lab06.clientservercommunication.R;
 import ro.pub.cs.systems.eim.lab06.clientservercommunication.general.Constants;
 import ro.pub.cs.systems.eim.lab06.clientservercommunication.general.Utilities;
+
+import java.io.BufferedReader;
+import java.net.Socket;
 
 public class ClientFragment extends Fragment {
 
@@ -39,6 +37,20 @@ public class ClientFragment extends Fragment {
                 // by publishing the progress - with the publishProgress(...) method - to the UI thread
                 // - close the socket to the server
 
+
+                String serverAddress = params[0];
+                int port = Integer.valueOf(params[1]);
+                Socket socket = new Socket(serverAddress, port);
+                BufferedReader bufferedReader = Utilities.getReader(socket);
+
+                String line = bufferedReader.readLine();
+
+                while (line != null) {
+                    publishProgress(line);
+                    line = bufferedReader.readLine();
+                }
+                socket.close();
+
             } catch (Exception exception) {
                 Log.e(Constants.TAG, "An exception has occurred: " + exception.getMessage());
                 if (Constants.DEBUG) {
@@ -52,12 +64,14 @@ public class ClientFragment extends Fragment {
         protected void onPreExecute() {
             // TODO: exercise 6b
             // - reset the content of serverMessageTextView
+            serverMessageTextView.setText("");
         }
 
         @Override
         protected void onProgressUpdate(String... progress) {
             // TODO: exercise 6b
             // - append the content to serverMessageTextView
+            serverMessageTextView.append(progress[0]);
         }
 
         @Override
